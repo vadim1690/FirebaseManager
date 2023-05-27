@@ -153,11 +153,11 @@ Initialize the FirebaseManager by creating an instance of it with the desired ta
     
   * Parameters
     
-    `keyMappers` - predicate to filter the model objects.
+    `keyMappers` - A list of functions (`Function<MyModel, String>`) that map an item of type `MyModel` to its corresponding key in other Firebase database tables
    
-    `predicate` - predicate to filter the model objects.
+    `resultMappers` -  A list of functions (`TwoParamFunction<DataSnapshot, MyModel, MyModel>`) that define how the retrieved `DataSnapshot` from the chained queries should be mapped to the `MyModel` objects
     
-    `predicate` - predicate to filter the model objects.
+    `tables` - A list of strings representing the names of the Firebase database tables to perform chained queries on.
    
     `predicate` - predicate to filter the model objects.(optional and can be passed null)
     
@@ -213,3 +213,156 @@ Initialize the FirebaseManager by creating an instance of it with the desired ta
 * `comparator `: A list of strings representing the names of the Firebase database tables to perform chained queries on. These tables are queried sequentially based on the order of the provided key mappers and result mappers.
 
 
+
+
+
+
+
+
+## `singleItemRead(T item, ItemSingleReadCallback<T> callback)`
+   
+  This function allows you to read a single item of type `T` from the Firebase database and retrieve the result through a callback.
+    
+  * Parameters
+   
+    `item` - The item of type `T` to be read from the Firebase database.
+    
+    `callback` - An implementation of the `ItemSingleReadCallback<T>` interface that defines the actions to be taken when the item is read.
+      
+  * Example
+    
+		MyModel model = new MyModel();
+		// Perform a single item read from the Firebase database
+		firebaseManager.singleItemRead(model, new ItemSingleReadCallback<MyModel>() {
+		    @Override
+		    public void onItemRead(MyModel item) {
+			// Handle the retrieved item here
+			// This method will be called when the item is read from the database
+		    }
+		});	
+		
+		
+		
+		
+		
+ ## `singleItemReadById(String id, ItemSingleReadCallback<T> callback)`
+   
+  This function allows you to read a single item of type `T` from the Firebase database by its ID and retrieve the result through a callback.
+    
+  * Parameters
+   
+    `id` - The ID of the item to be read from the Firebase database.
+    
+    `callback` - An implementation of the `ItemSingleReadCallback<T>` interface that defines the actions to be taken when the item is read.
+      
+  * Example
+    
+		String itemId = "your_item_id";
+		// Perform a single item read from the Firebase database by ID
+		firebaseManager.singleItemReadById(itemId, new ItemSingleReadCallback<MyModel>() {
+		    @Override
+		    public void onItemRead(MyModel item) {
+			// Handle the retrieved item here
+			// This method will be called when the item is read from the database
+		    }
+		});
+		
+
+## `getItemLiveData(T item)`
+   
+ This function returns a `LiveData` object that represents a single item of type `T` from the Firebase database. Any changes to the item in the database will be automatically reflected in the LiveData.
+    
+  * Parameters
+   
+    `item` -  The item of type `T` to be observed in the Firebase database.
+      
+  * Example
+    
+		MyModel model = new MyModel();
+		// Get a LiveData object representing a single item from the Firebase database
+		LiveData<MyModel> itemLiveData = firebaseManager.getItemLiveData(model);
+
+		// Observe changes to the item
+		itemLiveData.observe(this, new Observer<MyModel>() {
+		    @Override
+		    public void onChanged(MyModel item) {
+			// Handle changes to the item here
+			// This method will be called whenever the item in the database is updated
+		    }
+		});	
+		
+		
+## `getItemByIdLiveData(String id)`
+   
+   This function returns a `LiveData` object that represents a single item of type `T` from the Firebase database based on its ID. Any changes to the item in the  database will be automatically reflected in the LiveData.
+    
+  * Parameters
+   
+    `id` -  The ID of the item to be observed in the Firebase database.
+      
+  * Example
+    
+		String itemId = "your_item_id";
+		// Get a LiveData object representing a single item from the Firebase database by ID
+		LiveData<MyModel> itemLiveData = firebaseManager.getItemByIdLiveData(itemId);
+
+		// Observe changes to the item
+		itemLiveData.observe(this, new Observer<MyModel>() {
+		    @Override
+		    public void onChanged(MyModel item) {
+			// Handle changes to the item here
+			// This method will be called whenever the item in the database is updated
+		    }
+		});	
+		
+## `writeList(List<T> list)`
+   
+   This function allows you to write a list of items of type `T` to the Firebase database.
+    
+  * Parameters
+   
+    `list` - The list of items of type `T` to be written to the Firebase database.
+      
+  * Example
+    
+		List<MyModel> itemList = new ArrayList<>();
+		// Populate the itemList with your data
+
+		// Write a list of items to the Firebase database
+		firebaseManager.writeList(itemList);	
+		
+		
+## `writeItem(T item)`
+   
+   This function allows you to write a list of items of type `T` to the Firebase database.
+    
+  * Parameters
+   
+    `item` - The item of type `T` to be written to the Firebase database.
+      
+  * Example
+    
+		MyModel model = new MyModel();
+		// Populate the model with your data
+
+		// Write a single item to the Firebase database
+		firebaseManager.writeItem(model);
+		
+		
+		
+ ## `remove(T item)`
+   
+   This function allows you to remove a single item of type `T` from the Firebase database.
+    
+  * Parameters
+   
+    `item` - The item of type `T` to be removed from the Firebase database.
+      
+  * Example
+    
+		MyModel model = new MyModel();
+		// Populate the model with the item to be removed
+
+		// Remove a single item from the Firebase database
+		firebaseManager.remove(model);
+		
