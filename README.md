@@ -139,8 +139,77 @@ Initialize the FirebaseManager by creating an instance of it with the desired ta
 		FirebaseManager<MyModel> firebaseManager = new FirebaseManager<>("my_table", MyModel.class, MyModel::getId);
 		Predicate<MyModel> filterPredicate = item -> item.getCategory().equals("Electronics");
 		Comparator<MyModel> nameComparator = Comparator.comparing(MyModel::getName);
-		LiveData<List<MyModel>> filteredAndSortedItemsLiveData = firebaseManager.getListLiveData(filterPredicate, nameComparator);		
-
+		LiveData<List<MyModel>> filteredAndSortedItemsLiveData = firebaseManager.getListLiveData(filterPredicate, nameComparator);	
+		
+		
+		
+		
+				
+## `getListLiveData(List<Function<MyModel, String>> keyMappers, List<TwoParamFunction<DataSnapshot, MyModel, MyModel>> resultMappers, List<String> tables, Predicate<MyModel> predicate, Comparator<MyModel> comparator)`
+   
+ Retrieve a LiveData object that provides a combined list of `MyModel` items from multiple Firebase database references.
+ The key mappers and result mappers are used to map keys and results to the  `MyModel` objects.
+ The tables parameter specifies the names of the Firebase database tables to fetch the data from.
     
-
+  * Parameters
     
+    `keyMappers` - predicate to filter the model objects.
+   
+    `predicate` - predicate to filter the model objects.
+    
+    `predicate` - predicate to filter the model objects.
+   
+    `predicate` - predicate to filter the model objects.(optional and can be passed null)
+    
+    `comparator` - comparator to compare the model objects.(optional and can be passed null)
+      
+  * Example
+    		
+		FirebaseManager<MyModel> firebaseManager = new FirebaseManager<>("my_table", MyModel.class, MyModel::getId);
+		
+		// initialize parameters
+		List<Function<MyModel, String>> keyMappers = new ArrayList<>();
+		List<TwoParamFunction<DataSnapshot, MyModel, MyModel>> resultMappers = new ArrayList<>();
+		List<String> tables = new ArrayList<>();
+	
+		// we create key mappers that get the id (or other relevant field) of the other tables
+		keyMappers.add(MyModel -> myModel.getDifferentModel.getId());
+		keyMappers.add(MyModel -> myModel.getAnotherDifferentModel.getId());
+
+		// we create a result mapper the desides what to do with the result retreived for the chained query.
+		resultMappers.add((dataSnapshot, myModel) -> {
+		    DifferentModel differentModel = dataSnapshot.getValue(DifferentModel.class);
+		    myModel.setDifferentModel(differentModel);
+		    return myModel;
+		});
+
+		resultMappers.add((dataSnapshot, myModel) -> {
+		    AnotherDifferentModel anotherDifferentModel = dataSnapshot.getValue(AnotherDifferentModel.class);
+		    myModel.setAnotherDifferentModel(anotherDifferentModel);
+		    return myModel;
+		});
+		
+		// the tables which the chained queris should read from.
+		tables.add("different_model");
+		tables.add("another_different_model");
+		
+		// optional comparator
+		Comparator<MyModel> comparator  = Comparator.comparing(myModel -> myModel.getDate());
+		// optional predicate
+		Predicate<MyModel> predicate = myModel -> myModel.getCategory().equals("Electronics");
+
+		LiveData<List<MyModel>> chainedQueriesLiveData = firebaseManager.getListLiveData(keyMappers, resultMappers, tables,predicate,comparator);	
+
+`getListLiveData` function in the provided code allows you to perform chained queries on multiple Firebase database tables, apply a predicate for filtering, and specify a comparator for sorting the retrieved data. Let's break down the function and its parameters
+
+* `keyMappers`: A list of functions (`Function<MyModel, String>`) that map an item of type `MyModel` to its corresponding key in other Firebase database tables. These functions extract the relevant key information from `MyModel` objects.
+
+* `resultMappers`: A list of functions (`TwoParamFunction<DataSnapshot, MyModel, MyModel>`) that define how the retrieved `DataSnapshot` from the chained queries should be mapped to the `MyModel` objects. Each function takes a `DataSnapshot` and an existing `MyModel` object and returns the updated `MyModel` object.
+
+* `tables`: A list of strings representing the names of the Firebase database tables to perform chained queries on. These tables are queried sequentially based on the order of the provided key mappers and result mappers.
+
+* `predicate `: (optional): A predicate (`Predicate<MyModel>`) that defines a condition to filter the retrieved `MyModel` objects. Only objects that satisfy the predicate condition will be included in the final result.
+
+* `comparator `: A list of strings representing the names of the Firebase database tables to perform chained queries on. These tables are queried sequentially based on the order of the provided key mappers and result mappers.
+
+
