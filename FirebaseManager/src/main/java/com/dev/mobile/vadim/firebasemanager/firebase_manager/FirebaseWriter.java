@@ -28,4 +28,8 @@ class FirebaseWriter<T> {
         reference.child(keyMapper.apply(obj)).setValue(obj);
     }
 
+    public void writeObject(T obj, DatabaseReference.CompletionListener callback) {
+        reference.child(keyMapper.apply(obj)).setValue(obj,callback);
+    }
+
 }

@@ -186,7 +186,6 @@ class FirebaseReader<T> {
 
 
     private List<T> getChainedReadCalls(List<T> data, List<Function<T, String>> keyMappers, List<TwoParamFunction<DataSnapshot, T, T>> resultMappers, List<String> tables) {
-        List<T> updatedData = new ArrayList<>();
         CountDownLatch latch = new CountDownLatch(keyMappers.size() * data.size());
 
         for (int i = 0; i < keyMappers.size(); i++) {
@@ -203,14 +202,12 @@ class FirebaseReader<T> {
                 reference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        T updatedItem;
                         try {
-                            updatedItem = resultMappers.get(finalI).apply(snapshot, data.get(finalJ));
+                            resultMappers.get(finalI).apply(snapshot, data.get(finalJ));
                         } catch (Exception e) {
                             latch.countDown();
                             return;
                         }
-                        updatedData.add(updatedItem);
                         latch.countDown();
                     }
 
@@ -227,7 +224,7 @@ class FirebaseReader<T> {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return updatedData;
+        return data;
     }
 
 }

@@ -64,10 +64,18 @@ public class FirebaseManager<T> {
 
 
     public void singleItemRead(T item, ItemSingleReadCallback<T> callback) {
+        if(item == null){
+            callback.onItemRead(null);
+            return;
+        }
         firebaseReader.singleItemReadWithCallback(item, callback);
     }
 
     public void singleItemReadById(String id, ItemSingleReadCallback<T> callback) {
+        if(id == null){
+            callback.onItemRead(null);
+            return;
+        }
         firebaseReader.readSingleItemByIdWithCallback(id, callback);
     }
 
@@ -90,6 +98,10 @@ public class FirebaseManager<T> {
 
     public void writeItem(T item) {
         firebaseWriter.writeObject(item);
+    }
+
+    public void writeItem(T item, DatabaseReference.CompletionListener callback) {
+        firebaseWriter.writeObject(item,callback);
     }
 
     public void remove(T item) {
