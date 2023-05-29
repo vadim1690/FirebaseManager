@@ -27,7 +27,7 @@ It abstracts away the complexity of Firebase database operations, allowing you t
 2) Add the following dependencies in you app level gradle file if not exists:
 
 	    dependencies {
-			implementation 'com.github.vadim1690:FirebaseManager:1.0.0.1'
+			implementation 'com.github.vadim1690:FirebaseManager:1.0.0.2'
 		}
 
 ------------------------------------------------------------------------------------------------------------
